@@ -1,0 +1,14 @@
+---
+:wrong_guesses: []
+:lives_count: 10
+:dashes:
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+:secret_word: offerings
