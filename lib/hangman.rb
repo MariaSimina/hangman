@@ -26,11 +26,14 @@ class Game
   def play
     puts "Try to guess the secret word"
     puts "\n#{@@dashes.join(" ")}"
+    end_message = ""
 
     until (@@lives_count == 0) || !(@@dashes.include? "_")
       if save?
         save_game
         puts "Game saved"
+        end_message = "game_saved"
+        break
       end
 
       puts "You have #{@@lives_count} lives"
@@ -44,7 +47,11 @@ class Game
       puts "\n#{@@dashes.join(" ")}"
     end
 
-    puts "Secret word was: #{@@secret_word} \n Game over!"
+    end_game(end_message)
+  end
+
+  def end_game(message)
+    puts "Secret word was: #{@@secret_word} \n Game over!" unless message == "game_saved"
   end
 
   def save?
