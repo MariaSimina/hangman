@@ -1,0 +1,12 @@
+---
+:wrong_guesses:
+- a
+:lives_count: 9
+:dashes:
+- e
+- _
+- _
+- _
+- _
+- _
+:secret_word: ebooks

@@ -1,0 +1,14 @@
+---
+:wrong_guesses:
+- e
+- a
+:lives_count: 8
+:dashes:
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+:secret_word: writing

@@ -7,20 +7,28 @@ class Game
   @@secret_word = ""
 
   def new_game
-    puts "Hello and welcome to a new game of HANGMAN!"
+    puts "\nThis is a new game of HANGMAN!"
     self.get_secret_word
     self.dashes
     self.play
   end
 
   def load_game
-    puts "This is your saved HANGMAN game!"
-    game = YAML.load(File.read("saved_files/saved_game.yaml"))
-    @@wrong_guesses = game[:wrong_guesses]
-    @@lives_count = game[:lives_count]
-    @@dashes = game[:dashes]
-    @@secret_word = game[:secret_word]
-    self.play
+    print "Choose which HANGMAN game to load: "
+    game_name = gets.chomp
+    if File.exist? ("saved_files/#{game_name}.yaml")
+      game = YAML.load(File.read("saved_files/saved_game.yaml"))
+      @@wrong_guesses = game[:wrong_guesses]
+      @@lives_count = game[:lives_count]
+      @@dashes = game[:dashes]
+      @@secret_word = game[:secret_word]
+      self.play
+    else
+      puts "\nThis name does not exist. Please choose from one of the following:"
+      names = Dir["saved_files/*"]
+      puts names.map {|name| name[(name.index("/") + 1)..(name.index(".")) - 1]}
+      load_game
+    end
   end
 
   def play
@@ -29,13 +37,6 @@ class Game
     end_message = ""
 
     until (@@lives_count == 0) || !(@@dashes.include? "_")
-      if save?
-        save_game
-        puts "Game saved"
-        end_message = "game_saved"
-        break
-      end
-
       puts "You have #{@@lives_count} lives"
 
       unless @@wrong_guesses.empty?
@@ -43,30 +44,19 @@ class Game
       end
 
       get_guess = guess
+      
+      if get_guess == "save"
+        save_game
+        puts "Game saved"
+        end_message = "game_saved"
+        break
+      end
+
       check_guess(get_guess)
       puts "\n#{@@dashes.join(" ")}"
     end
 
-    end_game(end_message)
-  end
-
-  def end_game(message)
-    puts "Secret word was: #{@@secret_word} \n Game over!" unless message == "game_saved"
-  end
-
-  def save?
-    player_choice = ""
-
-    until (player_choice == "1") || (player_choice == "2")
-      puts "Do you want to save this game? Write 1 to save the game or 2 to continue"
-      player_choice = gets.chomp
-    end
-
-    if player_choice == "1"
-      true
-    else
-      false
-    end
+    puts "Secret word was: #{@@secret_word} \nGame over!" unless end_message == "game_saved"
   end
 
   def save_game
@@ -78,21 +68,43 @@ class Game
     })
 
     Dir.mkdir('saved_files') unless Dir.exist? ('saved_files')
+    
+    print "Write what name you want the saved file to have: "
+    filename = gets.chomp
 
-    File.open("saved_files/saved_game.yaml", "w") do |file|
+    if File.exist? ("saved_files/#{filename}.yaml")
+      print "This name already exists. Do you want to rewrite the game? Write YES or NO: "
+      player_answer = gets.chomp
+
+      until (player_answer == "YES") || (player_answer == "NO")
+        print "Only YES or NO options available: "
+        player_answer = gets.chomp
+        puts player_answer
+      end
+
+      if player_answer == "YES"
+        File.open("saved_files/#{filename}.yaml", "w") do |file|
+          file.puts to_yaml
+        end
+      elsif player_answer == "NO"
+        save_game
+      end
+    end
+
+    File.open("saved_files/#{filename}.yaml", "w") do |file|
       file.puts to_yaml
     end
   end
 
   def guess
     get_guess = ""
-    until (get_guess.length == 1) && (get_guess =~ /[[:alpha:]]/)
-      puts "Please write one letter:"
+    until ((get_guess.length == 1) && (get_guess =~ /[[:alpha:]]/)) || (get_guess == "save")
+      print "Please write one letter, or type save to save the game: "
       get_guess = gets.chomp.downcase
     end
-    
+
     while (@@wrong_guesses.include? get_guess) || (@@dashes.include? get_guess)
-      puts "You already chose that letter. Choose another one:"
+      print "You already chose that letter. Choose another one:"
       get_guess = gets.chomp.downcase
     end
 
@@ -134,8 +146,9 @@ end
 def play_hangman
   player_choice = ""
   until (player_choice == "1") || (player_choice == "2")
-    puts "Do you want to  play a new game or load last saved game?
-    Write 1 for New Game or 2 to Load Game"
+    puts "Hello and welcome to HANGMAN!"
+    puts "Do you want to  play a new game or load last saved game?"
+    print "Write 1 for New Game or 2 to Load Game: "
     player_choice = gets.chomp
   end
 

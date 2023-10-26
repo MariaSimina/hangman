@@ -1,0 +1,14 @@
+---
+:wrong_guesses:
+- a
+- e
+:lives_count: 8
+:dashes:
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+:secret_word: cooling
